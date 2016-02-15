@@ -1,0 +1,54 @@
+library(ncdf4)
+library(maps)
+
+# read csv file (replace all ' with '', remove #)
+tbl <- read.table('c:/project2/GlobalFloodsRecord.csv',header=TRUE,sep='~') 
+
+# centroids of all floods
+latX = tbl$Centroid.X
+lonY = tbl$Centroid.Y
+
+# read ncdf4 file
+filename <- 'c:/project2/NOAA_Daily_phi_500mb.nc' 
+ncid <- nc_open( filename ) 
+#names(ncid$var)
+#print (ncid)
+data <- ncvar_get( ncid, 'phi', start = c(1, 1, 1, 1), count = c(144, 15, 1, -1)) 
+
+# get start and end time count for 100 days past 1985-01-01
+dt <- as.Date("1948-01-01")
+startdate <- as.Date("1985-01-01")
+titletime <- startdate
+startcount <- as.integer(startdate - dt)
+endcount <- startcount+100
+
+# Set lon [-180 177.5] 
+lon=ncid$dim$X$vals 
+k=which(lon==180) 
+px=c(k:length(lon),1:(k-1)) 
+lon2=lon[px] 
+data2=data[px,,1] 
+lon2[1:(which(lon2==0.0))-1]=lon2[1:(which(lon2==0.0)-1)]-360 
+ 
+lat=ncid$dim$Y$vals 
+py=c(length(lat):1) 
+lat=lat[ py ] 
+
+int=seq(min(data),max(data),length.out=30)
+rgb.palette=colorRampPalette(c('darkblue','palegreen1','yellow','red2'), interpolate='spline') 
+
+# animate geopotential on world map
+for (i in startcount:endcount) {
+
+   # get geopotential data for this time value
+   data2=data[px,,i] 
+
+   # Plot with map 'world' 
+   filled.contour(lon2, lat, data2[,], color.palette=rgb.palette, levels=int, asp=1, ylim=c(-90,90),
+      plot.title= { title(main=titletime, xlab='Longitude [°]', ylab='Latitude [°]'); points(x = as.vector(latX), y = as.vector(lonY), pch = 19, col = "red")}, 
+      plot.axes = { axis(1); axis(2, seq(-90, 90, by = 45)); map('world', add=TRUE);grid()}) 
+
+   # add 1 day to chart title
+   titletime <- titletime+1
+}
+
