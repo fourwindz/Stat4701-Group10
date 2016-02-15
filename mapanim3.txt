@@ -5,8 +5,8 @@ library(maps)
 tbl <- read.table('c:/project2/GlobalFloodsRecord.csv',header=TRUE,sep='~') 
 
 # centroids of all floods
-latX = tbl$Centroid.X
-lonY = tbl$Centroid.Y
+#latX = tbl$Centroid.X
+#lonY = tbl$Centroid.Y
 
 # read ncdf4 file
 filename <- 'c:/project2/NOAA_Daily_phi_500mb.nc' 
@@ -20,7 +20,7 @@ dt <- as.Date("1948-01-01")
 startdate <- as.Date("1985-01-01")
 titletime <- startdate
 startcount <- as.integer(startdate - dt)
-endcount <- startcount+100
+endcount <- startcount+1000
 
 # Set lon [-180 177.5] 
 lon=ncid$dim$X$vals 
@@ -42,6 +42,11 @@ for (i in startcount:endcount) {
 
    # get geopotential data for this time value
    data2=data[px,,i] 
+
+   # show floods as they occur in time
+   tbl1 <- subset(tbl, ((titletime > as.Date(Began, "%d-%b-%y")) & (titletime < as.Date(Ended, "%d-%b-%y"))), select = c(Centroid.X, Centroid.Y))
+   latX = tbl1$Centroid.X
+   lonY = tbl1$Centroid.Y
 
    # Plot with map 'world' 
    filled.contour(lon2, lat, data2[,], color.palette=rgb.palette, levels=int, asp=1, ylim=c(-90,90),
