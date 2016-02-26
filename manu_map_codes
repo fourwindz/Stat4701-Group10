@@ -1,0 +1,65 @@
+install.packages("rworldmap")
+install.packages("XML")
+install.packages("maptools")
+install.packages("sp")
+install.packages("ffbase")
+install.packages("ff")
+install.packages("RCurl")
+install.packages("RColorBrewer")
+install.packages("raster")
+install.packages("sp")
+
+
+# Read csv into gf dataframe. I have modified the data a little. So attaching my smaller csv herewith
+
+gf <- read.csv("newglobalflood.csv", header = TRUE)
+gf$centroidy <- as.numeric(gf$centroidy)
+gf$centroidx <- as.numeric(gf$centroidx)
+gf$ended <- as.Date(gf$ended)
+gf$began <- as.Date(gf$began)
+gf$sqkm <- as.numeric(gf$sqkm)
+gf$displaced <- as.numeric(gf$displaced)
+gf$dead <- as.numeric(gf$dead)
+gf$damage <- as.numeric(gf$damage)
+gf$duration <- as.numeric(gf$duration)
+
+mapDevice('x11')
+#Generating table to work with map data
+
+spdf <- joinCountryData2Map(gf, joinCode="NAME", nameJoinColumn="Country")
+
+head(spfd)
+
+mapCountryData(spdf, nameColumnToPlot="dead", catMethod="fixedWidth", mapRegion = "world", 
+               colourPalette = "heat", addLegend = TRUE,  borderCol = "grey", 
+               mapTitle = "Distribution of Deaths countrywise",aspect = 1, missingCountryCol = NA,
+               lwd = 1.5)
+
+mapCountryData(spdf, nameColumnToPlot="severe", catMethod = "categorical", mapRegion = "world", 
+               colourPalette = c("light blue","blue","black"), addLegend = TRUE,  borderCol = "grey", 
+               mapTitle = "Severity of Floods countrywise",aspect = 1, missingCountryCol = NA,
+               lwd = 1.5)
+# we can make new colour sets, maybe experiment with this later
+pal1 <- brewer.pal(7,"PuBu")
+
+
+mapCountryData(spdf, nameColumnToPlot="duration", catMethod = "categorical", mapRegion = "world", 
+               colourPalette = pal1, addLegend = TRUE,  borderCol = "grey", 
+               mapTitle = "Duration of Floods countrywise",aspect = 1, missingCountryCol = NA,
+               lwd = 1.5)
+
+mapCountryData(spdf, nameColumnToPlot="displaced", catMethod = "categorical", mapRegion = "world", 
+               colourPalette = "heat", addLegend = TRUE,  borderCol = "grey", 
+               mapTitle = "Displaced by Floods countrywise",aspect = 1, missingCountryCol = NA,
+               lwd = 1.5)
+
+mapBubbles(dF=spdf, nameZSize="sqkm", nameZColour="severe",oceanCol='lightblue', 
+           landCol='wheat',symbolSize=0.6,nameX = "centroidx",nameY = "centroidY",
+           colourPalette="HEAT",legendHoriz = TRUE,colourLegendPos = "bottomleft",
+           addLegend = T,addColourLegend=T,main="tt",catMethod="pretty",lwd=3,
+           borderCol=16)
+
+
+mapBubbles(dF=spdf, nameZSize="dead", nameZColour="dead",oceanCol='lightblue',
+           landCol='wheat',symbolSize=0.25,nameX = "centroidx",
+           nameY = "centroidY")
