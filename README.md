@@ -29,3 +29,5 @@ The last paper (Richman1986.pdf) seems the most useful. Looks like there are thr
 This site is cool: http://www.esrl.noaa.gov/psd/enso/impacts/
 You can input the same months for which we have data and plot the same chart - useful for validating we are visualizing correctly. And then display side by side an chart of El Nino for that year. Not sure what this has to do with anything but it looks cool :)
 
+ms5129 : I am tinkering with github. Also added my files. This is just the first draft. Please let me know if you have any suggestions. 
+
