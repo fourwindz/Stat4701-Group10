@@ -17,10 +17,12 @@ To visualize the relationship between floods and global population we superimpos
 Global population GeoTiff
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+setwd("C:/Stat4701-Group10")  
+
 library(rasterVis)
 library(ggplot2)
 library(maps)
-setwd("c:/project2")  
 
 # read GeoTiff
 map <- raster("worldpop.tif")
@@ -35,10 +37,12 @@ gplot(map, maxpixels = 5e5) +
 Global population with Floods
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+setwd("C:/Stat4701-Group10")  
+
 library(rasterVis)
 library(ggplot2)
 library(maps)
-setwd("c:/project2")  
 
 # read csv file (replace all ' with '', remove #)
 tbl <- read.table('GlobalFloodsRecord.csv',header=TRUE,sep='~') 
@@ -77,3 +81,39 @@ As expected, if we then break down flood incidence by country, we see that of th
 We analyzed the news headlines accompanying the NOAA flood data and found that there were certain words and ideas that resonated across most countries and magnitude groupings, as well as differed. All word clouds we generated contained as the most commonly occurring words the following: "people", "river", "water", and "river". But for floods of magnitude less than 6, emphasis was rather evenly spread amongst "rain", "river", "heavy", and "people", while for floods greater than magnitude 6, emphasis shifted singularly to "people". 
 
 Cultural differences may also come into play in the differences between the word clouds for China, India, and the US. China and India's headlines more frequently mentioned "people" and, quite uniquely, "provinces" and "villages", respectively. Meanwhile, headlines in the US mentioned more often the cause of the flood itself (ie. "river", "water", "rain") rather than the people and communities affected. Interestingly, the most commonly used word for communities in the US was "county". 
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+setwd("C:/Stat4701-Group10")
+
+library(tm)
+library(SnowballC)
+library(wordcloud)
+
+news <- read.delim("news.csv", stringsAsFactors=FALSE)
+
+#original one
+news_corpus <- VCorpus(VectorSource(news$News))
+
+#clean the corpus
+news_corpus1 <- tm_map(news_corpus,  stripWhitespace)
+news_corpus1 <- tm_map(news_corpus1, content_transformer(tolower))
+news_corpus1 <- tm_map(news_corpus1, removePunctuation)
+news_corpus1 <- tm_map(news_corpus1, removeWords, stopwords("english"))
+
+#stemmed corpus
+news_corpus2 <- tm_map(news_corpus1, stemDocument)
+
+#word cloud
+n= 200
+
+pal1 <- brewer.pal(11,"Spectral")
+pal2 <- heat.colors(100, alpha = 1)
+pal3 <- rainbow(n, s = 1, v = 1, start = 0.7, end = max(1, n - 1)/n, alpha = 1)
+
+wordcloud(news_corpus2, max.words = n, random.order = FALSE, colors=pal1)
+
+```
+
+
