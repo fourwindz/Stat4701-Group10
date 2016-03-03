@@ -38,11 +38,10 @@ spdf <- joinCountryData2Map(gf, joinCode="NAME", nameJoinColumn="Country")
 
 head(spdf)
 
-fill <- mapCountryData(spdf, nameColumnToPlot="Duration.in.Days", catMethod = "categorical", mapRegion = "world", 
+mapCountryData(spdf, nameColumnToPlot="Duration.in.Days", catMethod = "categorical", mapRegion = "world", 
                        colourPalette = "white2Black", addLegend = TRUE,  borderCol = "grey", 
                        mapTitle = "Duration of Floods by Country",aspect = 1, missingCountryCol = NA,
-                       lwd = 1.5)
-fill
+                       lwd = 1.5, addLegend=TRUE)
 
 deaths <- subset(x=gf, Dead >0)
 mapBubbles(deaths, nameZSize="Affected.sq.km", nameZColour="Dead",symbolSize=1,nameX = "Centroid.X",
