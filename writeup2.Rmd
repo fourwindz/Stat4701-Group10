@@ -12,7 +12,8 @@ In the second set of plots, we compare annual mean temperature flucutations over
 
 ##Geopotential Height and Flooding
 
-To visualize the relationship between global Geopotential height and flooding we first animate the geopotential data.
+To visualize the relationship between global Geopotential height and flooding we first animate the geopotential data [Animation is in WebM format, supported browsers include: Mozilla Firefox 4  and later, Opera 10.60  and later, Google Chrome 6  and later, Microsoft Internet Explorer 9  and later (requires WebM MF  components)]
+
 
 ```{r animation, echo=FALSE, warning=FALSE, message=FALSE, fig.show='animate'}
 #, aniopts='controls'
