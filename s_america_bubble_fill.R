@@ -25,6 +25,8 @@ mapDevice()
 
 spdf <- joinCountryData2Map(gf, joinCode="NAME", nameJoinColumn="Country")
 
+deaths <- subset(x=gf, Dead >0)
+
 # Magnitude fill, and same bubbles
 mag_fill <- mapCountryData(spdf, nameColumnToPlot="Magnitude..M...", catMethod = "categorical", numCats = 10, mapRegion = "latin america", 
                            colourPalette = "white2Black", addLegend = FALSE,  borderCol = "grey", 

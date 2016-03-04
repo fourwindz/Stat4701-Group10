@@ -13,7 +13,7 @@ library(rworldmap)
 library(XML)
 library(maptools)
 library(sp)
-library(ffbase)
+#library(ffbase)
 library(ff)
 library(RCurl)
 library(RColorBrewer)
@@ -35,6 +35,8 @@ mapDevice()
 #Generating table to work with map data
 
 spdf <- joinCountryData2Map(gf, joinCode="NAME", nameJoinColumn="Country")
+
+deaths <- subset(x=gf, Dead >0)
 
 # Magnitude fill, and same bubbles
 mag_fill <- mapCountryData(spdf, nameColumnToPlot="Magnitude..M...", catMethod = "categorical", numCats = 10, mapRegion = "world", 

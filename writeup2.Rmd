@@ -72,7 +72,7 @@ for (i in startcount:endcount) {
 
    # Plot with map 'world' 
    filled.contour(lon2, lat, data2[,], color.palette=rgb.palette, levels=int, asp=1, ylim=c(-90,90),
-      plot.title= { title(main=titletime, xlab='Longitude [°]', ylab='Latitude [°]'); points(x = as.vector(latX), y = as.vector(lonY), pch = 19, col = "red")}, 
+      plot.title= { title(main=titletime, xlab='Longitude [?]', ylab='Latitude [?]'); points(x = as.vector(latX), y = as.vector(lonY), pch = 19, col = "red")}, 
       plot.axes = { axis(1); axis(2, seq(-90, 90, by = 45)); map('world', add=TRUE);grid()}) 
 
    # add 1 day to chart title
@@ -145,7 +145,35 @@ gplot(map, maxpixels = 5e5) +
 
 Here we take an initially broad view of the incidence of severe global floods since 1985 and then narrow our scope to focus on individual countries. In the first plot, over thirty years, we observe that the number of floods worldwide has been increasing overall and at roughly the same rate between those under and over magnitude of 6. It can also be seen that the number of floods changes sinusoidally, following the roughly decade-long global weather phenomena El Nino and La Nina. 
 
-As expected, if we then break down flood incidence by country, we see that of the twelve countries with the most floods, the number of floods has risen in more cases than not. We could not find any geographical correlation with flood incidence decrease or increase. 
+As expected, if we then break down flood incidence by country, we see that of the twelve countries with the most floods, the number of floods has risen in more cases than not. We could not find any geographical correlation with flood incidence decrease or increase.
+
+##Flood Impact Around the World
+
+By superimposing the mapBubbles upon a map filled by flood magnitude, we sought to compare the floods of similar magnitude and how tramautically they impacted people around the world. The US, for example, has on average been home to some of the most severe, long duration, and widely affecting floods, but most of the actual flooding events caused relatively little loss of home and life. Of course, the majority of the floods occurred along the river basin in the sparsely-populated Midwest, and the higher quality infrastructure and emergency response in developed countries must come into play.  
+
+We first took a broader view of floods' impact on communities globally. Our plots in this section cross-examine three variables: number of deaths, number of displaced flood victims, and the average flood magnitude for each country, where magnitude is pre-calculated as the log of the product of the severity, duration, and area affected by the flood. Several outliers are immediately self-evident. South Asia has witnessed two of the largest population displacements by a flood in the last half century. Moreover, South and Souteast Asia, including Southeast China, regularly suffer floods that cause much population displacement and an inordinate number of deaths. We can also see how the floods in the Eastern Hemisphere tend to hug the coastlines or at least crowd around primary monsoon corridors. Similarly, in Africa, South America, and Australia, bubbles tend to populate the eastern shorelines of the continents. This likely suggests that settlements tend to be more populous and thus likely to experience displacement and death along the eastern coast of most continents, but comparing this with global population density, perhaps global wind patterns also factor into the propensity for severe floods causing any amount of death and displacement along eastern coasts.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+mapDevice()
+#Generating table to work with map data
+
+spdf <- joinCountryData2Map(gf, joinCode="NAME", nameJoinColumn="Country")
+
+deaths <- subset(x=gf, Dead >0)
+
+# Magnitude fill, and same bubbles
+mag_fill <- mapCountryData(spdf, nameColumnToPlot="Magnitude..M...", catMethod = "categorical", numCats = 10, mapRegion = "world", 
+               colourPalette = "white2Black", addLegend = FALSE,  borderCol = "grey", 
+               mapTitle = "Deaths and displacement over flood magnitude",aspect = 1, missingCountryCol = NA,
+               lwd = 1.5)
+death_displaced_bubbles <- mapBubbles(deaths, nameZSize="Displaced", nameZColour="Dead",symbolSize=0.7,nameX = "Centroid.X", legendHoriz = TRUE, legendPos="topright",
+           nameY = "Centroid.Y", fill=TRUE, add=TRUE, colourPalette=adjustcolor(palette(heat.colors(5)), alpha.f=0.7), addColourLegend=FALSE, addLegend=TRUE)
+
+# Add legends
+do.call(addMapLegend, c(mag_fill, legendLabels="all", legendWidth=0.5, legendMar=10))
+do.call(addMapLegend, c(death_displaced_bubbles, legendLabels="limits", legendWidth=0.5, legendMar=6))
+
+```
 
 ##Text Analysis
 
