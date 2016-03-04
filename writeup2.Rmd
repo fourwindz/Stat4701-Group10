@@ -10,6 +10,76 @@ Using global temperature data from NASA's Goddard Institute for Space Studies (h
 
 In the second set of plots, we compare annual mean temperature flucutations over the last 130 years in the northern and southern hemispheres. Rather intuitively,  heavier energy use, greater overall population, and greater number of cities and other dense population clusters in the northern hemisphere have accelerated the annual mean temperature increase far more significantly than in the southern hemisphere. In particular, these factors' effects did not come lead to the temperature explosion in the northern hemisphere until the mid-20th century, when energy consumption really boomed.
 
+##Geopotential Height and Flooding
+
+To visualize the relationship between global Geopotential height and flooding we first animate the geopotential data.
+
+```{r animation, echo=FALSE, warning=FALSE, message=FALSE, fig.show='animate'}
+#, aniopts='controls'
+library(ncdf4)
+library(maps)
+library(animation)
+
+ani.options(loop = TRUE, interval = 0, nmax = 10)
+
+# read csv file (replace all ' with '', remove #)
+tbl <- read.table('c:/project2/GlobalFloodsRecord.csv',header=TRUE,sep='~') 
+
+# centroids of all floods
+#latX = tbl$Centroid.X
+#lonY = tbl$Centroid.Y
+
+# read ncdf4 file
+filename <- 'c:/project2/NOAA_Daily_phi_500mb.nc' 
+ncid <- nc_open( filename ) 
+#names(ncid$var)
+#print (ncid)
+data <- ncvar_get( ncid, 'phi', start = c(1, 1, 1, 1), count = c(144, 15, 1, -1)) 
+
+# get start and end time count for 100 days past 1985-01-01
+dt <- as.Date("1948-01-01")
+startdate <- as.Date("1985-01-01")
+titletime <- startdate
+startcount <- as.integer(startdate - dt)
+endcount <- startcount+10
+
+# Set lon [-180 177.5] 
+lon=ncid$dim$X$vals 
+k=which(lon==180) 
+px=c(k:length(lon),1:(k-1)) 
+lon2=lon[px] 
+data2=data[px,,1] 
+lon2[1:(which(lon2==0.0))-1]=lon2[1:(which(lon2==0.0)-1)]-360 
+ 
+lat=ncid$dim$Y$vals 
+py=c(length(lat):1) 
+lat=lat[ py ] 
+
+int=seq(min(data),max(data),length.out=30)
+rgb.palette=colorRampPalette(c('darkblue','palegreen1','yellow','red2'), interpolate='spline') 
+
+# animate geopotential on world map
+for (i in startcount:endcount) {
+
+   # get geopotential data for this time value
+   data2=data[px,,i] 
+
+   # show floods as they occur in time
+   tbl1 <- subset(tbl, ((titletime > as.Date(Began, "%d-%b-%y")) & (titletime < as.Date(Ended, "%d-%b-%y"))), select = c(Centroid.X, Centroid.Y))
+   latX = tbl1$Centroid.X
+   lonY = tbl1$Centroid.Y
+
+   # Plot with map 'world' 
+   filled.contour(lon2, lat, data2[,], color.palette=rgb.palette, levels=int, asp=1, ylim=c(-90,90),
+      plot.title= { title(main=titletime, xlab='Longitude [°]', ylab='Latitude [°]'); points(x = as.vector(latX), y = as.vector(lonY), pch = 19, col = "red")}, 
+      plot.axes = { axis(1); axis(2, seq(-90, 90, by = 45)); map('world', add=TRUE);grid()}) 
+
+   # add 1 day to chart title
+   titletime <- titletime+1
+}
+
+```
+
 ##Flooding and Population
 
 To visualize the relationship between floods and global population we superimpose transparent red dots for every flood on a global population map in GeoTiff format. (The map was retrieved from the NASA Socioeconomic Data and Applications Center (sedac) (http://beta.sedac.ciesin.columbia.edu/data/collection/gpw-v4). The map was scaled to a manageable size using the QGIS desktop application). We see that global flooding tends to occur in heavily populated areas - which makes intuitive sense and human development has concentrated in coastal areas and fertile river valleys.
