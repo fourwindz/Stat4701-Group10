@@ -154,8 +154,20 @@ By superimposing the mapBubbles upon a map filled by flood magnitude, we sought 
 We first took a broader view of floods' impact on communities globally. Our plots in this section cross-examine three variables: number of deaths, number of displaced flood victims, and the average flood magnitude for each country, where magnitude is pre-calculated as the log of the product of the severity, duration, and area affected by the flood. Several outliers are immediately self-evident. South Asia has witnessed two of the largest population displacements by a flood in the last half century. Moreover, South and Souteast Asia, including Southeast China, regularly suffer floods that cause much population displacement and an inordinate number of deaths. We can also see how the floods in the Eastern Hemisphere tend to hug the coastlines or at least crowd around primary monsoon corridors. Similarly, in Africa, South America, and Australia, bubbles tend to populate the eastern shorelines of the continents. This likely suggests that settlements tend to be more populous and thus likely to experience displacement and death along the eastern coast of most continents, but comparing this with global population density, perhaps global wind patterns also factor into the propensity for severe floods causing any amount of death and displacement along eastern coasts.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
-mapDevice()
+library(rworldmap)
+
 #Generating table to work with map data
+
+gf <- read.csv("GlobalFloodsRecord_for_bubbles.csv", header = TRUE, sep=",", nrows = 1000)
+gf$Centroid.Y <- as.numeric(gf$Centroid.Y)
+gf$Centroid.X <- as.numeric(gf$Centroid.X)
+gf$Affected <- as.numeric(gf$Affected)
+gf$Displaced <- as.numeric(gf$Displaced)
+gf$Dead <- as.numeric(gf$Dead)
+gf$Damage..USD. <- as.numeric(gf$Damage..USD.)
+gf$Duration.in.Days <- as.numeric(gf$Duration.in.Days)
+gf$Severity.. <- as.numeric(gf$Severity..)
+gf$Affected.sq.km <- as.numeric(gf$Affected.sq.km)
 
 spdf <- joinCountryData2Map(gf, joinCode="NAME", nameJoinColumn="Country")
 
