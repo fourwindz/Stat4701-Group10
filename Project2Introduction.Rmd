@@ -8,7 +8,7 @@ output: word_document
 library(ggplot2)
 library(lubridate)
 library(dplyr)
-data <- read.csv('GlobalFloodsRecord.csv', stringsAsFactors = F)
+data <- read.csv('GFR.csv', stringsAsFactors = F)
 #Interannual Evolution of Flood Duration
 duration <- data.frame(data$Began,data$'Duration.in.Days', stringsAsFactors = F)
 colnames(duration)<-c("year", "days") 
