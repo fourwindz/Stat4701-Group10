@@ -1,0 +1,470 @@
+---
+title: "writeup2.Rmd"
+output: html_document
+---
+##The Context of Rising Global Temperatures
+
+Using global temperature data from NASA's Goddard Institute for Space Studies (http://data.giss.nasa.gov/gistemp), we wanted to investigate whether and how changes in global temperature over many decades affected changes in flood incidence. In the first plot, an average temperature baseline was drawn based on the years 1951 to 1980; clearly, the trend has been an inexorable march up, but it is telling that since shortly before 1980, the global annual temperature mean has never returned to that average. 
+
+**What to say about the 1985 line? Also is the degrees scale correct?**
+
+In the second set of plots, we compare annual mean temperature flucutations over the last 130 years in the northern and southern hemispheres. Rather intuitively,  heavier energy use, greater overall population, and greater number of cities and other dense population clusters in the northern hemisphere have accelerated the annual mean temperature increase far more significantly than in the southern hemisphere. In particular, these factors' effects did not come lead to the temperature explosion in the northern hemisphere until the mid-20th century, when energy consumption really boomed.
+
+##Geopotential Height and Flooding
+
+To visualize the relationship between global Geopotential height and flooding we first animate the geopotential data [Animation is in WebM format, supported browsers include: Mozilla Firefox 4  and later, Opera 10.60  and later, Google Chrome 6  and later, Microsoft Internet Explorer 9  and later (requires WebM MF  components)]
+
+
+```{r animation, echo=FALSE, warning=FALSE, message=FALSE, fig.show='animate'}
+#, aniopts='controls'
+library(ncdf4)
+library(maps)
+library(animation)
+
+setwd("C:/Stat4701-Group10")  
+
+ani.options(loop = TRUE, interval = 0, nmax = 10)
+
+# read csv file (replace all ' with '', remove #)
+tbl <- read.table('GlobalFloodsRecord.csv',header=TRUE,sep='~') 
+
+# centroids of all floods
+#latX = tbl$Centroid.X
+#lonY = tbl$Centroid.Y
+
+# read ncdf4 file
+filename <- 'c:/project2/NOAA_Daily_phi_500mb.nc' 
+ncid <- nc_open( filename ) 
+#names(ncid$var)
+#print (ncid)
+data <- ncvar_get( ncid, 'phi', start = c(1, 1, 1, 1), count = c(144, 15, 1, -1)) 
+
+# get start and end time count for 100 days past 1985-01-01
+dt <- as.Date("1948-01-01")
+startdate <- as.Date("1985-01-01")
+titletime <- startdate
+startcount <- as.integer(startdate - dt)
+endcount <- startcount+10
+
+# Set lon [-180 177.5] 
+lon=ncid$dim$X$vals 
+k=which(lon==180) 
+px=c(k:length(lon),1:(k-1)) 
+lon2=lon[px] 
+data2=data[px,,1] 
+lon2[1:(which(lon2==0.0))-1]=lon2[1:(which(lon2==0.0)-1)]-360 
+ 
+lat=ncid$dim$Y$vals 
+py=c(length(lat):1) 
+lat=lat[ py ] 
+
+int=seq(min(data),max(data),length.out=30)
+rgb.palette=colorRampPalette(c('darkblue','palegreen1','yellow','red2'), interpolate='spline') 
+
+# animate geopotential on world map
+for (i in startcount:endcount) {
+
+   # get geopotential data for this time value
+   data2=data[px,,i] 
+
+   # show floods as they occur in time
+   tbl1 <- subset(tbl, ((titletime > as.Date(Began, "%d-%b-%y")) & (titletime < as.Date(Ended, "%d-%b-%y"))), select = c(Centroid.X, Centroid.Y))
+   latX = tbl1$Centroid.X
+   lonY = tbl1$Centroid.Y
+
+   # Plot with map 'world' 
+   filled.contour(lon2, lat, data2[,], color.palette=rgb.palette, levels=int, asp=1, ylim=c(-90,90),
+      plot.title= { title(main=titletime, xlab='Longitude [?]', ylab='Latitude [?]'); points(x = as.vector(latX), y = as.vector(lonY), pch = 19, col = "red")}, 
+      plot.axes = { axis(1); axis(2, seq(-90, 90, by = 45)); map('world', add=TRUE);grid()}) 
+
+   # add 1 day to chart title
+   titletime <- titletime+1
+}
+
+```
+
+##Flooding Seasonality and Historical Analysis
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+
+setwd("C:/Stat4701-Group10")  
+
+data <- read.csv('GFR.csv', stringsAsFactors = F)
+#Interannual Evolution of Flood Duration
+duration <- data.frame(data$Began,data$'Duration.in.Days', stringsAsFactors = F)
+colnames(duration)<-c("year", "days") 
+duration$year <- as.Date(duration$year, format="%d-%b-%y")
+duration$days <- as.numeric(duration$days)
+duration$year <- year(duration$year)
+duration <- aggregate(duration$days, by=list(Category=duration$year), FUN=mean)
+colnames(duration)<-c("year", "days") 
+duration$year <- as.character(duration$year)
+ggplot(duration, aes(year, days))+geom_bar(stat = "identity") + labs(title="Interannual Evolution of Flood Duration (since 1985)", x="Calendar Year", y="Avg.Duration in Days") + theme(legend.position="False")
+```
+
+From the above graph on Interannual Evolution of Flood Duration, we can see a clear trend that the average duration of flood is increasing. Particularly, the average duration of flood exceeds 15 days in 2007, 2011, 2014, which are the recent 10 years. This implies that the severity of floods is increasing since 1985.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#Average Flood Duration (since 1985) - Data organized by the month of flood beginning
+dur.month <- data.frame(data$Began,data$'Duration.in.Days', stringsAsFactors = F)
+colnames(dur.month)<-c("month", "days") 
+dur.month$month <- as.Date(dur.month$month, format="%d-%b-%y")
+dur.month$days <- as.numeric(dur.month$days)
+dur.month$month <- month(dur.month$month, label=T)
+dur.month <- aggregate(dur.month$days, by=list(Category=dur.month$month), FUN=mean)
+colnames(dur.month)<-c("month", "days") 
+ggplot(dur.month, aes(month, days))+geom_bar(stat = "identity") + labs(title="Average Flood Duration (since 1985) - Data organized by the month of flood beginning", x="Calendar Month", y="Avg.Duration in Days") + theme(legend.position="False")
+```
+
+In this graph, we summarize the average flood duration in days in terms of month. It is interesting to see that January has the longest flood duration - it is the only month that has average flood duration of more than 15 days. Notice that the flood duration in April and August are between 12 and 14 days. The rest of the months all have the average flood duration of around 10 days. From this graph, we learnt that we should expect longer duration of floods in January, April, and August regardless of the year we are in.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#Percentage of floods with different severity class (since 1985)
+sev <- data.frame(data$Began,data$M.6,data$M.4, stringsAsFactors = F)
+colnames(sev)<-c("year", "M6", "M4")
+sev <- mutate(sev, level=NA)
+sev <- subset(sev, sev$year!="")
+for (i in 1:nrow(sev)) {
+  if(sev[i,2]==1 & sev[i,3]==1){
+    sev[i,4] <- "Severity Level 3"
+  }else{
+    if(sev[i,2]==0 & sev[i,3]==1){
+      sev[i,4] <- "Severity Level 2"
+    }else{
+      if(sev[i,2]==0 & sev[i,3]==0){
+        sev[i,4] <- "Severity Level 1"
+      }else{
+        sev[i,4] <- NA
+      }
+    }
+  }
+}
+sev$year <- as.Date(sev$year, format="%d-%b-%y")
+sev$year <- year(sev$year)
+sev <- subset(sev, !is.na(sev$year))
+test <- sev %>%
+  group_by(year,level) %>%
+  tally  %>%
+  group_by(year) %>%
+  mutate(pct=(100*n)/sum(n))
+ggplot(test, aes(x=year, y=pct)) + geom_bar(stat='identity') + facet_grid(level ~.) + labs(title="Percentage of floods with different severity class (since 1985)",x="Calendar Year",y="Percentage of Total, %") + scale_x_continuous(breaks=seq(min(sev$year), max(sev$year),by=1)) + theme(legend.position="False")
+```
+
+In this graph, we visualize the percentage of floods in different severity levels regarding different years. It is obvious from the gragh that severity level 2 floods take up the highest proportion in almost every year. Notice that severity level 2 floods and level 3 floods both take up almost 50% of the total floods in 2015. In 2013, the percentage of level 3 floods increased more than 10% from the level in 2012 and then stayed at around 50%. The graph shows us that flood severity is increasing in recent years. Now we barely have any severity level 1 flood.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#Average number of people killed by floods (since 1985)
+dead.year <- data.frame(data$Began,data$Dead, stringsAsFactors = F)
+colnames(dead.year)<-c("year", "dead") 
+dead.year$year <- as.Date(dead.year$year, format="%d-%b-%y")
+dead.year$dead <- as.numeric(dead.year$dead)
+dead.year$year <- year(dead.year$year)
+dead.year <- aggregate(dead.year$dead, by=list(Category=dead.year$year), FUN=mean)
+colnames(dead.year)<-c("year", "dead") 
+dead.year$year <- as.character(dead.year$year)
+ggplot(dead.year, aes(year, dead))+geom_bar(stat = "identity") + labs(title="Average number of people killed by floods (since 1985)", x="Calendar Year", y="Avg.Number of People Killed") + theme(legend.position="False")
+```
+
+From this graph, we can see that the average amount of people killed in 1991, 2004, and 2008 is the highest. In 1991, the average number of people killed almost reached 1250. It means that there should be one or more extreme severe flood in 1991 which pull up the average of that year.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#Number of fatalities by MONTH (Synthesis since 1985)
+dead.month <- data.frame(data$Began,data$Dead, stringsAsFactors = F)
+colnames(dead.month)<-c("month", "dead")
+dead.month$month <- as.Date(dead.month$month, format="%d-%b-%y")
+dead.month$dead <- as.numeric(dead.month$dead)
+dead.month$month <- month(dead.month$month, label=T)
+dead.month <- aggregate(dead.month$dead, by=list(Category=dead.month$month), FUN=mean)
+colnames(dead.month)<-c("month", "dead") 
+ggplot(dead.month, aes(month, dead))+geom_bar(stat = "identity") + labs(title="Number of fatalities by MONTH (Synthesis since 1985)", x="Calendar Month", y="Avg.Number of People Killed") + theme(legend.position="False")
+```
+
+It is interesting to see that the average number of people skilled by flood is the highest in December. We suspect that one of the most severe flood that had enormous amount of people skilled happened in December, which then pull up the average in December. The month with the second largest amount of people skilled by flood is April, which makes sense because April is also one of the month we saw above that has the most sever floods in terms of duration.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#Average number of people displaced because of floods (since 1985)
+displaced.year <- data.frame(data$Began,data$Dead, stringsAsFactors = F)
+colnames(displaced.year)<-c("year", "displaced") 
+displaced.year$year <- as.Date(displaced.year$year, format="%d-%b-%y")
+displaced.year$displaced <- as.numeric(displaced.year$displaced)
+displaced.year$year <- year(displaced.year$year)
+displaced.year <- aggregate(displaced.year$displaced, by=list(Category=displaced.year$year), FUN=mean)
+colnames(displaced.year)<-c("year", "displaced") 
+displaced.year$year <- as.character(displaced.year$year)
+ggplot(displaced.year, aes(year, displaced))+geom_bar(stat = "identity") + labs(title="Average number of people displaced because of floods (since 1985)", x="Calendar Year", y="Avg.Number of People Displaced") + theme(legend.position="False")
+```
+From the plot, we see that there are most people displaced in average in year 1991, 2004, 2008, which are exactly the years with most people skilled by floods. Again, 1991 has most people displaced in average.
+
+
+##Flooding and Population
+
+To visualize the relationship between floods and global population we superimpose transparent red dots for every flood on a global population map in GeoTiff format. (The map was retrieved from the NASA Socioeconomic Data and Applications Center (sedac) (http://beta.sedac.ciesin.columbia.edu/data/collection/gpw-v4). The map was scaled to a manageable size using the QGIS desktop application). We see that global flooding tends to occur in heavily populated areas - which makes intuitive sense and human development has concentrated in coastal areas and fertile river valleys.
+
+Global population GeoTiff
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+setwd("C:/Stat4701-Group10")  
+
+library(rasterVis)
+library(ggplot2)
+library(maps)
+
+# read GeoTiff
+map <- raster("worldpop.tif")
+
+gplot(map, maxpixels = 5e5) + 
+  geom_tile(aes(fill = value)) +
+  facet_wrap(~ variable) +
+  scale_fill_gradient(low = 'white', high = 'black') +
+  coord_equal()
+```
+
+Global population with Floods
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+setwd("C:/Stat4701-Group10")  
+
+library(rasterVis)
+library(ggplot2)
+library(maps)
+
+# read csv file (replace all ' with '', remove #)
+tbl <- read.table('GlobalFloodsRecord.csv',header=TRUE,sep='~') 
+
+# centroids of all floods
+latX = tbl$Centroid.X
+lonY = tbl$Centroid.Y
+
+# read GeoTiff
+map <- raster("worldpop.tif")
+
+latX <- latX[which(latX!='')] 
+latX <- latX[which(latX!='N/A')] 
+
+lonY <- lonY[which(lonY!='')] 
+lonY <- lonY[which(lonY!='N/A')] 
+
+flood = data.frame(x = as.numeric(as.character(latX)), y = as.numeric(as.character(lonY)))
+
+gplot(map, maxpixels = 5e5) + 
+  geom_tile(aes(fill = value)) +
+  facet_wrap(~ variable) +
+  scale_fill_gradient(low = 'white', high = 'black') +
+  coord_equal()+geom_point(data = flood, aes(x = x, y = y), colour = "red", size = 0.75, alpha = 0.1)
+
+```
+
+##Frequency and Magnitude of Floods Worldwide
+
+Here we take an initially broad view of the incidence of severe global floods since 1985 and then narrow our scope to focus on individual countries. In the first plot, over thirty years, we observe that the number of floods worldwide has been increasing overall and at roughly the same rate between those under and over magnitude of 6. It can also be seen that the number of floods changes sinusoidally, following the roughly decade-long global weather phenomena El Nino and La Nina. 
+
+As expected, if we then break down flood incidence by country, we see that of the twelve countries with the most floods, the number of floods has risen in more cases than not. We could not find any geographical correlation with flood incidence decrease or increase.
+
+##Flood Impact Around the World
+
+By superimposing the mapBubbles upon a map filled by flood magnitude, we sought to compare the floods of similar magnitude and how tramautically they impacted people around the world. The US, for example, has on average been home to some of the most severe, long duration, and widely affecting floods, but most of the actual flooding events caused relatively little loss of home and life. Of course, the majority of the floods occurred along the river basin in the sparsely-populated Midwest, and the higher quality infrastructure and emergency response in developed countries must come into play.  
+
+We first took a broader view of floods' impact on communities globally. Our plots in this section cross-examine three variables: number of deaths, number of displaced flood victims, and the average flood magnitude for each country, where magnitude is pre-calculated as the log of the product of the severity, duration, and area affected by the flood. Several outliers are immediately self-evident. South Asia has witnessed two of the largest population displacements by a flood in the last half century. Moreover, South and Souteast Asia, including Southeast China, regularly suffer floods that cause much population displacement and an inordinate number of deaths. We can also see how the floods in the Eastern Hemisphere tend to hug the coastlines or at least crowd around primary monsoon corridors. Similarly, in Africa, South America, and Australia, bubbles tend to populate the eastern shorelines of the continents. This likely suggests that settlements tend to be more populous and thus likely to experience displacement and death along the eastern coast of most continents. Moreover, perhaps global wind patterns also factor into the propensity for severe floods to cause death and displacement along eastern coasts, however large or small the toll may be.
+
+With three variables at our disposal to display and interpret, the task at hand was deciding which ones to use. We decided it was important to focus a section on the direct human impact of the floods, so loss of life and home were chosen to be represented by color and size of bubble, respectively. By overlaying the mapBubbles plot over the mapCountryData fill map, we had our pick of the variable on which to compare the deaths and displacements. As flood magnitude enveloped three highly relevant variables - severity, duration, and area affected - we decided it was the most suitable third variable to serve as the "backdrop".
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(rworldmap)
+
+#Generating table to work with map data
+
+gf <- read.csv("GlobalFloodsRecord_for_bubbles.csv", header = TRUE, sep=",", nrows = 1000)
+gf$Centroid.Y <- as.numeric(gf$Centroid.Y)
+gf$Centroid.X <- as.numeric(gf$Centroid.X)
+gf$Affected <- as.numeric(gf$Affected)
+gf$Displaced <- as.numeric(gf$Displaced)
+gf$Dead <- as.numeric(gf$Dead)
+gf$Damage..USD. <- as.numeric(gf$Damage..USD.)
+gf$Duration.in.Days <- as.numeric(gf$Duration.in.Days)
+gf$Severity.. <- as.numeric(gf$Severity..)
+gf$Affected.sq.km <- as.numeric(gf$Affected.sq.km)
+
+spdf <- joinCountryData2Map(gf, joinCode="NAME", nameJoinColumn="Country")
+
+deaths <- subset(x=gf, Dead >0)
+
+# Magnitude fill, and same bubbles
+mag_fill <- mapCountryData(spdf, nameColumnToPlot="Magnitude..M...", catMethod = "categorical", numCats = 10, mapRegion = "world", 
+               colourPalette = "white2Black", addLegend = FALSE,  borderCol = "grey", 
+               mapTitle = "Deaths and displacement over flood magnitude",aspect = 1, missingCountryCol = NA,
+               lwd = 1.5)
+death_displaced_bubbles <- mapBubbles(deaths, nameZSize="Displaced", nameZColour="Dead",symbolSize=0.7,nameX = "Centroid.X", legendHoriz = TRUE, legendPos="topright",
+           nameY = "Centroid.Y", fill=TRUE, add=TRUE, colourPalette=adjustcolor(palette(heat.colors(5)), alpha.f=0.7), addColourLegend=FALSE, addLegend=TRUE)
+
+# Add legends
+do.call(addMapLegend, c(mag_fill, legendLabels="all", legendWidth=0.5, legendMar=10))
+do.call(addMapLegend, c(death_displaced_bubbles, legendLabels="limits", legendWidth=0.5, legendMar=6))
+
+```
+
+##Text Analysis
+
+We analyzed the news headlines accompanying the NOAA flood data and found that there were certain words and ideas that resonated across most countries and magnitude groupings, as well as differed. All word clouds we generated contained as the most commonly occurring words the following: "people", "river", "water", and "river". But for floods of magnitude less than 6, emphasis was rather evenly spread amongst "rain", "river", "heavy", and "people", while for floods greater than magnitude 6, emphasis shifted singularly to "people". 
+
+Cultural differences may also come into play in the differences between the word clouds for China, India, and the US. China and India's headlines more frequently mentioned "people" and, quite uniquely, "provinces" and "villages", respectively. Meanwhile, headlines in the US mentioned more often the cause of the flood itself (ie. "river", "water", "rain") rather than the people and communities affected. Interestingly, the most commonly used word for communities in the US was "county". 
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+
+setwd("C:/Stat4701-Group10")
+
+library(tm)
+library(SnowballC)
+library(wordcloud)
+library(RColorBrewer)
+
+#news <- read.delim("news.csv", stringsAsFactors=FALSE)
+#news_complete <- read.csv("news_complete.csv", stringsAsFactors=FALSE)
+#news_complete <- read.xlsx("news_complete.csv",sheetName = "Sheet1")
+
+news_complete <- read.csv("GlobalFloodsRecord_updated.csv", na.strings = "NA", sep="~")
+
+news_complete$Country <- factor(news_complete$Country)
+
+#change column names 
+names(news_complete)[1] <- 'ID'
+names(news_complete)[30] <- 'News'
+
+
+#clean the corpus
+makeCorpus <- function (dataset) {
+  news_corpus <- VCorpus(VectorSource(dataset$News))
+  news_corpus <- tm_map(news_corpus,  stripWhitespace)
+  news_corpus <- tm_map(news_corpus, content_transformer(tolower))
+  news_corpus <- tm_map(news_corpus, removePunctuation)
+  result <- tm_map(news_corpus, removeWords, stopwords("english"))
+  return(result)
+}
+
+#stem the corpus
+makestemmedCorpus <- function (corpus) {
+  news_corpus2 <- tm_map(corpus, stemDocument)
+  return(news_corpus2)
+}
+
+corpus_complete <- makeCorpus(news_complete)
+
+stemmedcorpus_complete <- makestemmedCorpus(corpus_complete)
+
+
+######################################################
+#subgroup corpus
+subgroup_usa = news_complete[news_complete$Country=='USA',]
+corpus_usa = makeCorpus(subgroup_usa)
+stemmedcorpus_usa = makestemmedCorpus(corpus_usa)
+
+subgroup_china = news_complete[news_complete$Country=='China',]
+corpus_china = makeCorpus(subgroup_china)
+stemmedcorpus_china = makestemmedCorpus(corpus_china)
+
+subgroup_india = news_complete[news_complete$Country=='India',]
+corpus_india = makeCorpus(subgroup_india)
+stemmedcorpus_india = makestemmedCorpus(corpus_india)
+
+
+#######################################################
+#word cloud
+n= 100
+
+#colors
+pal1 <- brewer.pal(9,"YlGn")
+pal2 <- sort(heat.colors(10, alpha = 1),decreasing = T)
+pal3 <- rainbow(n, s = 1, v = 1, start = 0.7, end = max(1, n - 1)/n, alpha = 1)
+pal4 <- brewer.pal(9,"OrRd")
+pal5 <- brewer.pal(9,"Blues")
+
+par(mfrow=c(1,1))
+wordcloud(corpus_complete, max.words = n, random.order = FALSE, colors=pal1)
+wordcloud(stemmedcorpus_complete, max.words = n, random.order = FALSE, rot.per = 0.2,colors=pal4)
+
+######################################################
+#1.Comparing three countries
+par(mfrow=c(1,3))
+corpus_usa_2 <- tm_map(corpus_usa,  removeWords, c("flooding","flood","floods",'said'))
+corpus_china_2 <- tm_map(corpus_china,  removeWords, c("flooding","flood","floods",'said'))
+corpus_india_2 <- tm_map(corpus_india,  removeWords, c("flooding","flood","floods",'said'))
+
+wordcloud(corpus_usa_2, max.words = n, random.order = FALSE, colors=pal5)
+title("USA",line = -5)
+wordcloud(corpus_china_2, max.words = n, random.order = FALSE, colors=pal4)
+title("China",line = -5)
+wordcloud(corpus_india_2, max.words = n, random.order = FALSE, colors=pal1)
+title("India",line = -5)
+
+
+wordcloud(stemmedcorpus_usa, max.words = 50, random.order = FALSE, colors=pal5)
+wordcloud(stemmedcorpus_china, max.words = 50, random.order = FALSE, colors=pal4)
+wordcloud(stemmedcorpus_india, max.words = n-50, random.order = FALSE, colors=pal4)
+
+#######################################################
+#2.Comparing severity
+# This section compares the words for flood with varying magnitudes
+
+subgroup_severe = news_complete[news_complete$Magnitude..M...>=6.1,]
+corpus_severe = makeCorpus(subgroup_severe)
+stemmedcorpus_severe = makestemmedCorpus(corpus_severe)
+
+corpus_severe_2 <- tm_map(corpus_severe,  removeWords, c("flooding","flood","flooded","floods",'said'))
+
+subgroup_mild = news_complete[news_complete$Magnitude..M...<4.6,]
+corpus_mild = makeCorpus(subgroup_mild)
+stemmedcorpus_mild = makestemmedCorpus(corpus_mild)
+
+corpus_mild_2 <- tm_map(corpus_mild,  removeWords, c("flooding","flood","floods",'said'))
+
+
+par(mfrow=c(1,2))
+wordcloud(corpus_severe_2, max.words = n, random.order = FALSE, rot.per = 0.3, colors=pal4)
+title("Magnitude > 6",line=-1)
+wordcloud(corpus_mild_2, max.words = n, random.order = FALSE, rot.per = 0.3, colors=pal5)
+title("Magnitude < 4.6",line=-1)
+
+#par(mfrow=c(1,2))
+#wordcloud(stemmedcorpus_severe, max.words = n, random.order = FALSE,  colors=pal4)
+#wordcloud(stemmedcorpus_mild, max.words = n, random.order = FALSE, colors=pal5)
+
+
+# subgroup_severe = subgroup_usa[as.numeric(subgroup_usa$Dead)>164]
+# stemmedcorpus_severe = makestemmedCorpus(corpus_severe)
+# 
+# corpus_severe_2 <- tm_map(corpus_severe,  removeWords, c("flooding","flood","floods","flooded",'said'))
+# 
+# wordcloud(corpus_severe_2, max.words = n, random.order = FALSE, rot.per = 0.3, colors=pal4)
+# 
+# subgroup_mild = subgroup_usa[as.numeric(subgroup_usa$Dead)<=2,]
+# corpus_mild = makeCorpus(subgroup_mild)
+# stemmedcorpus_mild = makestemmedCorpus(corpus_mild)
+# 
+# corpus_mild_2 <- tm_map(corpus_mild,  removeWords, c("flooding","flood","floods","flooded",'said'))
+# wordcloud(corpus_mild_2, max.words = n, random.order = FALSE, rot.per = 0.3, colors=pal5)
+
+#######################################################
+#3. Words Association
+#TODO: still needs ideas
+dtm_usa <- DocumentTermMatrix(corpus_usa,control = list(minWordLength = 10))
+dtm_china <- DocumentTermMatrix(corpus_china,control = list(minWordLength = 10))
+dtm_india <- DocumentTermMatrix(corpus_india,control = list(minWordLength = 10))
+
+usa_people <- findAssocs(dtm_usa, "people",0.5)$people[1:10]
+china_people <- findAssocs(dtm_china, "people",0.5)$people[1:10]
+india_people <- findAssocs(dtm_india, "people",0.5)$people[1:10]
+
+usa_people <- findAssocs(dtm_usa, "life",0.5)$people[1:10]
+china_people <- findAssocs(dtm_china, "people",0.5)$people[1:10]
+india_people <- findAssocs(dtm_india, "people",0.5)$people[1:10]
+
+
+```
+
+
