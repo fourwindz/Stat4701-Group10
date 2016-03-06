@@ -26,7 +26,7 @@ setwd("C:/Stat4701-Group10")
 ani.options(loop = TRUE, interval = 0, nmax = 10)
 
 # read csv file (replace all ' with '', remove #)
-tbl <- read.table('c:GlobalFloodsRecord.csv',header=TRUE,sep='~') 
+tbl <- read.table('GlobalFloodsRecord.csv',header=TRUE,sep='~') 
 
 # centroids of all floods
 #latX = tbl$Centroid.X
@@ -108,7 +108,7 @@ ggplot(duration, aes(year, days, fill='red'))+geom_bar(stat = "identity") + labs
 
 From the above graph on Interannual Evolution of Flood Duration, we can see a clear trend that the average duration of flood is increasing. Particularly, the average duration of flood exceeds 15 days in 2007, 2011, 2014, which are the recent 10 years. This implies that the severity of floods is increasing since 1985.
 
-```{r}
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Average Flood Duration (since 1985) - Data organized by the month of flood beginning
 dur.month <- data.frame(data$Began,data$'Duration.in.Days', stringsAsFactors = F)
 colnames(dur.month)<-c("month", "days") 
