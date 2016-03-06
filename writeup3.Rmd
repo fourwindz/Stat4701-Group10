@@ -85,7 +85,7 @@ for (i in startcount:endcount) {
 
 ##Flooding Seasonality and Historical Analysis
 
-By plotting the data we have, we see a clear general trend that flooding is getting more severe year after year - the duration and severity level are both increasing. The months with the most severe floods are December-January, April, and August. We also notice that there are at least one extremely severe flood that killed/displaced hundreds people in year 1991, 2004, and 2008.
+By plotting the data we have, we see a clear general trend that flooding is getting more severe year after year - the duration and severity level are both increasing. The months with the most severe floods are December-January, April, and August. We also notice that there are at least one extremely severe flood that killed/displaced hundreds people in year 1991, 2004, and 2008. Now let's take a look at each graph individually:
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(ggplot2)
