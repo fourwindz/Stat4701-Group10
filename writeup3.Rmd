@@ -85,6 +85,7 @@ for (i in startcount:endcount) {
 
 ##Flooding Seasonality and Historical Analysis
 
+By plotting the data we have, we see a clear general trend that flooding is getting more severe year after year - the duration and severity level are both increasing. The months with the most severe floods are December-January, April, and August. We also notice that there are at least one extremely severe flood that killed/displaced hundreds people in year 1991, 2004, and 2008.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(ggplot2)
@@ -106,7 +107,7 @@ duration$year <- as.character(duration$year)
 ggplot(duration, aes(year, days))+geom_bar(stat = "identity") + labs(title="Interannual Evolution of Flood Duration (since 1985)", x="Calendar Year", y="Avg.Duration in Days") + theme(legend.position="False")
 ```
 
-From the above graph on Interannual Evolution of Flood Duration, we can see a clear trend that the average duration of flood is increasing. Particularly, the average duration of flood exceeds 15 days in 2007, 2011, 2014, which are the recent 10 years. This implies that the severity of floods is increasing since 1985.
+The graph on Interannual Evolution of Flood Duration shows us a clear trend that the average duration of flood is increasing. Particularly, the average duration of flood exceeds 15 days in 2007, 2011, 2014, which are the recent 10 years. This implies that the severity of floods is increasing since 1985.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Average Flood Duration (since 1985) - Data organized by the month of flood beginning
@@ -154,7 +155,7 @@ test <- sev %>%
 ggplot(test, aes(x=year, y=pct)) + geom_bar(stat='identity') + facet_grid(level ~.) + labs(title="Percentage of floods with different severity class (since 1985)",x="Calendar Year",y="Percentage of Total, %") + scale_x_continuous(breaks=seq(min(sev$year), max(sev$year),by=1)) + theme(legend.position="False")
 ```
 
-In this graph, we visualize the percentage of floods in different severity levels regarding different years. It is obvious from the gragh that severity level 2 floods take up the highest proportion in almost every year. Notice that severity level 2 floods and level 3 floods both take up almost 50% of the total floods in 2015. In 2013, the percentage of level 3 floods increased more than 10% from the level in 2012 and then stayed at around 50%. The graph shows us that flood severity is increasing in recent years. Now we barely have any severity level 1 flood.
+By visualizing the percentage of floods in different severity levels regarding different years, we see that severity level 2 floods take up the highest proportion in almost every year. Notice that severity level 2 floods and level 3 floods both take up almost 50% of the total floods in 2015. In 2013, the percentage of level 3 floods increased more than 10% from the level in 2012 and then stayed at around 50%. The graph shows us that flood severity is increasing in recent years. Now we barely have any severity level 1 flood.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Average number of people killed by floods (since 1985)
@@ -169,7 +170,7 @@ dead.year$year <- as.character(dead.year$year)
 ggplot(dead.year, aes(year, dead))+geom_bar(stat = "identity") + labs(title="Average number of people killed by floods (since 1985)", x="Calendar Year", y="Avg.Number of People Killed") + theme(legend.position="False")
 ```
 
-From this graph, we can see that the average amount of people killed in 1991, 2004, and 2008 is the highest. In 1991, the average number of people killed almost reached 1250. It means that there should be one or more extreme severe flood in 1991 which pull up the average of that year.
+We can see that the average amount of people killed in 1991, 2004, and 2008 is the highest. In 1991, the average number of people killed almost reached 1250. It means that there should be one or more extreme severe flood in 1991 which pull up the average of that year.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Number of fatalities by MONTH (Synthesis since 1985)
