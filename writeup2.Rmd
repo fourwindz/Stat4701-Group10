@@ -21,10 +21,12 @@ library(ncdf4)
 library(maps)
 library(animation)
 
+setwd("C:/Stat4701-Group10")  
+
 ani.options(loop = TRUE, interval = 0, nmax = 10)
 
 # read csv file (replace all ' with '', remove #)
-tbl <- read.table('c:/project2/GlobalFloodsRecord.csv',header=TRUE,sep='~') 
+tbl <- read.table('c:GlobalFloodsRecord.csv',header=TRUE,sep='~') 
 
 # centroids of all floods
 #latX = tbl$Centroid.X
@@ -80,6 +82,123 @@ for (i in startcount:endcount) {
 }
 
 ```
+
+##Flooding Seasonality and Historical Analysis
+
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+
+setwd("C:/Stat4701-Group10")  
+
+data <- read.csv('GFR.csv', stringsAsFactors = F)
+#Interannual Evolution of Flood Duration
+duration <- data.frame(data$Began,data$'Duration.in.Days', stringsAsFactors = F)
+colnames(duration)<-c("year", "days") 
+duration$year <- as.Date(duration$year, format="%d-%b-%y")
+duration$days <- as.numeric(duration$days)
+duration$year <- year(duration$year)
+duration <- aggregate(duration$days, by=list(Category=duration$year), FUN=mean)
+colnames(duration)<-c("year", "days") 
+duration$year <- as.character(duration$year)
+ggplot(duration, aes(year, days, fill='red'))+geom_bar(stat = "identity") + labs(title="Interannual Evolution of Flood Duration (since 1985)", x="Calendar Year", y="Avg.Duration in Days") + theme(legend.position="False")
+```
+
+From the above graph on Interannual Evolution of Flood Duration, we can see a clear trend that the average duration of flood is increasing. Particularly, the average duration of flood exceeds 15 days in 2007, 2011, 2014, which are the recent 10 years. This implies that the severity of floods is increasing since 1985.
+
+```{r}
+#Average Flood Duration (since 1985) - Data organized by the month of flood beginning
+dur.month <- data.frame(data$Began,data$'Duration.in.Days', stringsAsFactors = F)
+colnames(dur.month)<-c("month", "days") 
+dur.month$month <- as.Date(dur.month$month, format="%d-%b-%y")
+dur.month$days <- as.numeric(dur.month$days)
+dur.month$month <- month(dur.month$month, label=T)
+dur.month <- aggregate(dur.month$days, by=list(Category=dur.month$month), FUN=mean)
+colnames(dur.month)<-c("month", "days") 
+ggplot(dur.month, aes(month, days, fill='red'))+geom_bar(stat = "identity") + labs(title="Average Flood Duration (since 1985) - Data organized by the month of flood beginning", x="Calendar Month", y="Avg.Duration in Days") + theme(legend.position="False")
+```
+
+In this graph, we summarize the average flood duration in days in terms of month. It is interesting to see that January has the longest flood duration - it is the only month that has average flood duration of more than 15 days. Notice that the flood duration in April and August are between 12 and 14 days. The rest of the months all have the average flood duration of around 10 days. From this graph, we learnt that we should expect longer duration of floods in January, April, and August regardless of the year we are in.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#Percentage of floods with different severity class (since 1985)
+sev <- data.frame(data$Began,data$M.6,data$M.4, stringsAsFactors = F)
+colnames(sev)<-c("year", "M6", "M4")
+sev <- mutate(sev, level=NA)
+sev <- subset(sev, sev$year!="")
+for (i in 1:nrow(sev)) {
+  if(sev[i,2]==1 & sev[i,3]==1){
+    sev[i,4] <- "Severity Level 3"
+  }else{
+    if(sev[i,2]==0 & sev[i,3]==1){
+      sev[i,4] <- "Severity Level 2"
+    }else{
+      if(sev[i,2]==0 & sev[i,3]==0){
+        sev[i,4] <- "Severity Level 1"
+      }else{
+        sev[i,4] <- NA
+      }
+    }
+  }
+}
+sev$year <- as.Date(sev$year, format="%d-%b-%y")
+sev$year <- year(sev$year)
+sev <- subset(sev, !is.na(sev$year))
+test <- sev %>%
+  group_by(year,level) %>%
+  tally  %>%
+  group_by(year) %>%
+  mutate(pct=(100*n)/sum(n))
+ggplot(test, aes(x=year, y=pct, fill='red')) + geom_bar(stat='identity') + facet_grid(level ~.) + labs(title="Percentage of floods with different severity class (since 1985)",x="Calendar Year",y="Percentage of Total, %") + scale_x_continuous(breaks=seq(min(sev$year), max(sev$year),by=1)) + theme(legend.position="False")
+```
+
+In this graph, we visualize the percentage of floods in different severity levels regarding different years. It is obvious from the gragh that severity level 2 floods take up the highest proportion in almost every year. Notice that severity level 2 floods and level 3 floods both take up almost 50% of the total floods in 2015. In 2013, the percentage of level 3 floods increased more than 10% from the level in 2012 and then stayed at around 50%. The graph shows us that flood severity is increasing in recent years. Now we barely have any severity level 1 flood.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#Average number of people killed by floods (since 1985)
+dead.year <- data.frame(data$Began,data$Dead, stringsAsFactors = F)
+colnames(dead.year)<-c("year", "dead") 
+dead.year$year <- as.Date(dead.year$year, format="%d-%b-%y")
+dead.year$dead <- as.numeric(dead.year$dead)
+dead.year$year <- year(dead.year$year)
+dead.year <- aggregate(dead.year$dead, by=list(Category=dead.year$year), FUN=mean)
+colnames(dead.year)<-c("year", "dead") 
+dead.year$year <- as.character(dead.year$year)
+ggplot(dead.year, aes(year, dead, fill='red'))+geom_bar(stat = "identity") + labs(title="Average number of people killed by floods (since 1985)", x="Calendar Year", y="Avg.Number of People Killed") + theme(legend.position="False")
+```
+
+From this graph, we can see that the average amount of people killed in 1991, 2004, and 2008 is the highest. In 1991, the average number of people killed almost reached 1250. It means that there should be one or more extreme severe flood in 1991 which pull up the average of that year.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#Number of fatalities by MONTH (Synthesis since 1985)
+dead.month <- data.frame(data$Began,data$Dead, stringsAsFactors = F)
+colnames(dead.month)<-c("month", "dead")
+dead.month$month <- as.Date(dead.month$month, format="%d-%b-%y")
+dead.month$dead <- as.numeric(dead.month$dead)
+dead.month$month <- month(dead.month$month, label=T)
+dead.month <- aggregate(dead.month$dead, by=list(Category=dead.month$month), FUN=mean)
+colnames(dead.month)<-c("month", "dead") 
+ggplot(dead.month, aes(month, dead, fill='red'))+geom_bar(stat = "identity") + labs(title="Number of fatalities by MONTH (Synthesis since 1985)", x="Calendar Month", y="Avg.Number of People Killed") + theme(legend.position="False")
+```
+
+It is interesting to see that the average number of people skilled by flood is the highest in December. We suspect that one of the most severe flood that had enormous amount of people skilled happened in December, which then pull up the average in December. The month with the second largest amount of people skilled by flood is April, which makes sense because April is also one of the month we saw above that has the most sever floods in terms of duration.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+#Average number of people displaced because of floods (since 1985)
+displaced.year <- data.frame(data$Began,data$Dead, stringsAsFactors = F)
+colnames(displaced.year)<-c("year", "displaced") 
+displaced.year$year <- as.Date(displaced.year$year, format="%d-%b-%y")
+displaced.year$displaced <- as.numeric(displaced.year$displaced)
+displaced.year$year <- year(displaced.year$year)
+displaced.year <- aggregate(displaced.year$displaced, by=list(Category=displaced.year$year), FUN=mean)
+colnames(displaced.year)<-c("year", "displaced") 
+displaced.year$year <- as.character(displaced.year$year)
+ggplot(displaced.year, aes(year, displaced, fill='red'))+geom_bar(stat = "identity") + labs(title="Average number of people displaced because of floods (since 1985)", x="Calendar Year", y="Avg.Number of People Displaced") + theme(legend.position="False")
+```
+From the plot, we see that there are most people displaced in average in year 1991, 2004, 2008, which are exactly the years with most people skilled by floods. Again, 1991 has most people displaced in average.
+
 
 ##Flooding and Population
 
