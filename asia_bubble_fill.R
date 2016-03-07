@@ -2,7 +2,6 @@ library(rworldmap)
 library(XML)
 library(maptools)
 library(sp)
-#library(ffbase)
 library(ff)
 library(RCurl)
 library(RColorBrewer)
@@ -37,6 +36,6 @@ death_displaced_bubbles <- mapBubbles(deaths, nameZSize="Displaced", catMethod="
                                       nameY = "Centroid.Y", fill=TRUE, add=TRUE, colourPalette=adjustcolor(sort(heat.colors(5), decreasing=T), alpha.f=0.8), addColourLegend=FALSE, addLegend=TRUE)
 
 # Add legends
-do.call(addMapLegend, c(mag_fill, legendLabels="all", legendWidth=0.5, legendMar=11))
-do.call(addMapLegend, c(death_displaced_bubbles, legendLabels="limits", legendWidth=0.5, legendMar=8))
+do.call(addMapLegend, c(mag_fill, legendLabels="all", legendWidth=0.5, legendMar=5, legendArgs=mtext("Magnitude")))
+do.call(addMapLegend, c(death_displaced_bubbles, legendLabels="limits", legendWidth=0.5, legendMar=2, legendArgs=mtext("Log of deaths")))
 

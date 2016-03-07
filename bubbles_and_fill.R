@@ -1,19 +1,7 @@
-#install.packages("rworldmap")
-#install.packages("XML")
-#install.packages("maptools")
-#install.packages("sp")
-#install.packages("ffbase")
-#install.packages("ff")
-#install.packages("RCurl")
-#install.packages("RColorBrewer")
-#install.packages("raster")
-#install.packages("ggplot2")
-
 library(rworldmap)
 library(XML)
 library(maptools)
 library(sp)
-#library(ffbase)
 library(ff)
 library(RCurl)
 library(RColorBrewer)
@@ -45,12 +33,12 @@ mag_fill <- mapCountryData(spdf, nameColumnToPlot="Magnitude..M...", catMethod =
                colourPalette = "white2Black", addLegend = FALSE,  borderCol = "grey", 
                mapTitle = "Deaths and displacement over flood magnitude",aspect = 1, missingCountryCol = NA,
                lwd = 1.5)
-death_displaced_bubbles <- mapBubbles(deaths, nameZSize="Displaced", catMethod="categorical", nameZColour="Dead2",symbolSize=0.7,nameX = "Centroid.X", legendHoriz = TRUE, legendPos="topright",
+death_displaced_bubbles <- mapBubbles(deaths, nameZSize="Displaced", catMethod="categorical", nameZColour="Dead2",symbolSize=1,nameX = "Centroid.X", legendHoriz = TRUE, legendPos="topright",
            nameY = "Centroid.Y", fill=TRUE, add=TRUE, colourPalette=adjustcolor(sort(heat.colors(5), decreasing = T), alpha.f=0.7), addColourLegend=FALSE, addLegend=TRUE)
 
 # Add legends
-do.call(addMapLegend, c(mag_fill, legendLabels="all", legendWidth=0.5, legendMar=11))
-do.call(addMapLegend, c(death_displaced_bubbles, legendLabels="limits", legendWidth=0.5, legendMar=8))
+do.call(addMapLegend, c(mag_fill, legendLabels="all", legendWidth=0.5, legendMar=8, legendArgs=mtext("Magnitude")))
+do.call(addMapLegend, c(death_displaced_bubbles, legendLabels="limits", legendWidth=0.5, legendMar=5, legendArgs=mtext("Log of deaths")))
 
 
 
