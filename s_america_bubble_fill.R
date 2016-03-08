@@ -30,7 +30,7 @@ deaths$Dead2 <- log(deaths$Dead, base=2)
 # Magnitude fill, and same bubbles
 mag_fill <- mapCountryData(spdf, nameColumnToPlot="Magnitude..M...", catMethod = "categorical", numCats = 10, mapRegion = "latin america", 
                            colourPalette = "white2Black", addLegend = FALSE,  borderCol = "grey", 
-                           mapTitle = "Deaths and displacement over flood magnitude",aspect = 1, missingCountryCol = NA,
+                           mapTitle = "Deaths and displacement over flood magnitude, South America",aspect = 1, missingCountryCol = NA,
                            lwd = 1.5)
 death_displaced_bubbles <- mapBubbles(deaths, nameZSize="Displaced", nameZColour="Dead2",symbolSize=1.4,nameX = "Centroid.X", legendHoriz = TRUE, legendPos="topright",
                                       nameY = "Centroid.Y", fill=TRUE, add=TRUE, colourPalette=adjustcolor(sort(heat.colors(5), decreasing=T), alpha.f=0.8), addColourLegend=F, addLegend=F)
