@@ -234,7 +234,7 @@ duration$year <- year(duration$year)
 duration <- aggregate(duration$days, by=list(Category=duration$year), FUN=mean)
 colnames(duration)<-c("year", "days") 
 duration$year <- as.character(duration$year)
-ggplot(duration, aes(year, days))+geom_bar(stat = "identity") + labs(title="Interannual Evolution of Flood Duration (since 1985)", x="Calendar Year", y="Avg.Duration in Days") + theme(legend.position="False")
+ggplot(duration, aes(year, days))+geom_bar(stat = "identity") + labs(title="Interannual Evolution of Flood Duration (since 1985)", x="Calendar Year", y="Avg.Duration in Days") + theme(legend.position="False", axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 ```
 
 The graph on Interannual Evolution of Flood Duration shows us a clear trend that the average duration of flood is increasing. Particularly, the average duration of flood exceeds 15 days in 2007, 2011, 2014, which are the recent 10 years. This implies that the severity of floods is increasing since 1985.
@@ -282,7 +282,7 @@ test <- sev %>%
   tally  %>%
   group_by(year) %>%
   mutate(pct=(100*n)/sum(n))
-ggplot(test, aes(x=year, y=pct)) + geom_bar(stat='identity') + facet_grid(level ~.) + labs(title="Percentage of floods with different severity class (since 1985)",x="Calendar Year",y="Percentage of Total, %") + scale_x_continuous(breaks=seq(min(sev$year), max(sev$year),by=1)) + theme(legend.position="False")
+ggplot(test, aes(x=year, y=pct)) + geom_bar(stat='identity') + facet_grid(level ~.) + labs(title="Percentage of floods with different severity class (since 1985)",x="Calendar Year",y="Percentage of Total, %") + scale_x_continuous(breaks=seq(min(sev$year), max(sev$year),by=1)) + theme(legend.position="False", axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 ```
 
 By visualizing the percentage of floods in different severity levels regarding different years, we see that severity level 2 floods take up the highest proportion in almost every year. Notice that severity level 2 floods and level 3 floods both take up almost 50% of the total floods in 2015. In 2013, the percentage of level 3 floods increased more than 10% from the level in 2012 and then stayed at around 50%. The graph shows us that flood severity is increasing in recent years. Now we barely have any severity level 1 flood.
@@ -297,7 +297,7 @@ dead.year$year <- year(dead.year$year)
 dead.year <- aggregate(dead.year$dead, by=list(Category=dead.year$year), FUN=mean)
 colnames(dead.year)<-c("year", "dead") 
 dead.year$year <- as.character(dead.year$year)
-ggplot(dead.year, aes(year, dead))+geom_bar(stat = "identity") + labs(title="Average number of people killed by floods (since 1985)", x="Calendar Year", y="Avg.Number of People Killed") + theme(legend.position="False")
+ggplot(dead.year, aes(year, dead))+geom_bar(stat = "identity") + labs(title="Average number of people killed by floods (since 1985)", x="Calendar Year", y="Avg.Number of People Killed") + theme(legend.position="False", axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 ```
 
 We can see that the average amount of people killed in 1991, 2004, and 2008 is the highest. In 1991, the average number of people killed almost reached 1250. It means that there should be one or more extreme severe flood in 1991 which pull up the average of that year.
@@ -326,7 +326,7 @@ displaced.year$year <- year(displaced.year$year)
 displaced.year <- aggregate(displaced.year$displaced, by=list(Category=displaced.year$year), FUN=mean)
 colnames(displaced.year)<-c("year", "displaced") 
 displaced.year$year <- as.character(displaced.year$year)
-ggplot(displaced.year, aes(year, displaced))+geom_bar(stat = "identity") + labs(title="Average number of people displaced because of floods (since 1985)", x="Calendar Year", y="Avg.Number of People Displaced") + theme(legend.position="False")
+ggplot(displaced.year, aes(year, displaced))+geom_bar(stat = "identity") + labs(title="Average number of people displaced because of floods (since 1985)", x="Calendar Year", y="Avg.Number of People Displaced") + theme(legend.position="False", axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 ```
 From the plot, we see that there are most people displaced in average in year 1991, 2004, 2008, which are exactly the years with most people skilled by floods. Again, 1991 has most people displaced in average.
 
