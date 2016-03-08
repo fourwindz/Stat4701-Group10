@@ -6,9 +6,60 @@ output: html_document
 
 Using global temperature data from NASA's Goddard Institute for Space Studies (http://data.giss.nasa.gov/gistemp), we wanted to investigate whether and how changes in global temperature over many decades affected changes in flood incidence. In the first plot, an average temperature baseline was drawn based on the years 1951 to 1980; clearly, the trend has been an inexorable march up, but it is telling that since shortly before 1980, the global annual temperature mean has never returned to that average. 
 
-**What to say about the 1985 line? Also is the degrees scale correct?**
-
 In the second set of plots, we compare annual mean temperature flucutations over the last 130 years in the northern and southern hemispheres. Rather intuitively,  heavier energy use, greater overall population, and greater number of cities and other dense population clusters in the northern hemisphere have accelerated the annual mean temperature increase far more significantly than in the southern hemisphere. In particular, these factors' effects did not come lead to the temperature explosion in the northern hemisphere until the mid-20th century, when energy consumption really boomed.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+
+setwd("C:/Stat4701-Group10")  
+
+temp <- read.csv("Global_temp.csv")
+attach(temp)
+
+##SOURCE http://data.giss.nasa.gov/gistemp/
+par(mfrow = c(1,1), mar = c(4,4,3,1))
+plot(Year,Glob, type = 'l', col = "red",xlim=c(1880,2016), ylab = "Degrees", main = "Global Annual Temperature mean")
+abline(a=0,b=0, lty = 2)
+text(1885,4,"1951-80 Average", cex = .8)
+text(2010,-45,"Source: http://data.giss.nasa.gov/gistemp/", cex = .5)
+abline(a=0,b=0, lty = 2)
+abline(v=1985, lty = 2)
+text(1988,80,"1985", cex = .8)
+
+
+par(mfrow = c(1,2),mar =c(4,4,3,1))
+plot(Year,NHem,type = 'l', col = "red",xlim=c(1880,2016), ylab = "Degrees", main = "Northern Hemisphere",ylim=c(-50,110))
+abline(v=1985, lty = 2)
+par(mar =c(4,3,3,2))
+plot(Year,SHem,type = 'l', col = "red",xlim=c(1880,2016),yaxt = "n", ylab = "", main = "Southern Hemisphere",ylim=c(-50,110))
+abline(v=1985, lty = 2)
+
+
+##Just in case we want more detailed temperature changes (by latitude)
+if(FALSE){
+par(mfrow = c(2,2))
+plot(Year,X64N.90N, type = 'l',ylim = c(-200,200))
+plot(Year,X44N.64N, type = 'l',ylim = c(-200,200))
+plot(Year,X24N.44N, type = 'l',ylim = c(-200,200))
+plot(Year,EQU.24N, type = 'l',ylim = c(-200,200))
+
+par(mfrow = c(2,2))
+plot(Year,X24S.EQU, type = 'l',ylim = c(-200,200))
+plot(Year,X44S.24S, type = 'l',ylim = c(-200,200))
+plot(Year,X64S.44S, type = 'l',ylim = c(-200,200))
+plot(Year,X90S.64S, type = 'l',ylim = c(-200,200))
+
+
+plot(Year,SHem, type = 'l',ylim=c(-50,110))
+plot(Year,SHem, type = 'l',ylim=c(-50,110))
+plot(Year,SHem, type = 'l',ylim=c(-50,110))
+plot(Year,SHem, type = 'l',ylim=c(-50,110))
+plot(Year,SHem, type = 'l',ylim=c(-50,110))
+}
+
+```
 
 ##Geopotential Height and Flooding
 
