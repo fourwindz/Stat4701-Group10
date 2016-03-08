@@ -8,14 +8,22 @@ output: html_document
 
 Using global temperature data from NASA's Goddard Institute for Space Studies (http://data.giss.nasa.gov/gistemp), we wanted to investigate whether and how changes in global temperature over many decades affected changes in flood incidence. In the first plot, an average temperature baseline was drawn based on the years 1951 to 1980; clearly, the trend has been an inexorable march up, but it is telling that since shortly before 1980, the global annual temperature mean has never returned to that average. 
 
-**What to say about the 1985 line? Also is the degrees scale correct?**
-
 In the second set of plots, we compare annual mean temperature flucutations over the last 130 years in the northern and southern hemispheres. Rather intuitively,  heavier energy use, greater overall population, and greater number of cities and other dense population clusters in the northern hemisphere have accelerated the annual mean temperature increase far more significantly than in the southern hemisphere. In particular, these factors' effects did not come lead to the temperature explosion in the northern hemisphere until the mid-20th century, when energy consumption really boomed.
 
+<<<<<<< HEAD
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 
 setwd("C:/Stat4701-Group10")  
+=======
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+library(ggplot2)
+library(lubridate)
+library(dplyr)
+
+setwd("C:/Stat4701-Group10")  
+
+>>>>>>> origin/master
 temp <- read.csv("Global_temp.csv")
 attach(temp)
 
