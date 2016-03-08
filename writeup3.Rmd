@@ -10,12 +10,6 @@ Using global temperature data from NASA's Goddard Institute for Space Studies (h
 
 In the second set of plots, we compare annual mean temperature flucutations over the last 130 years in the northern and southern hemispheres. Rather intuitively,  heavier energy use, greater overall population, and greater number of cities and other dense population clusters in the northern hemisphere have accelerated the annual mean temperature increase far more significantly than in the southern hemisphere. In particular, these factors' effects did not come lead to the temperature explosion in the northern hemisphere until the mid-20th century, when energy consumption really boomed.
 
-<<<<<<< HEAD
-
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-
-setwd("C:/Stat4701-Group10")  
-=======
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(ggplot2)
 library(lubridate)
@@ -23,7 +17,6 @@ library(dplyr)
 
 setwd("C:/Stat4701-Group10")  
 
->>>>>>> origin/master
 temp <- read.csv("Global_temp.csv")
 attach(temp)
 
@@ -72,7 +65,7 @@ plot(Year,SHem, type = 'l',ylim=c(-50,110))
 
 ##Geopotential Height and Flooding
 
-To visualize the relationship between global Geopotential height and flooding we first animate the geopotential data [Animation is in WebM format, supported browsers include: Mozilla Firefox 4  and later, Opera 10.60  and later, Google Chrome 6  and later, Microsoft Internet Explorer 9  and later (requires WebM MF  components)]
+To visualize the relationship between global Geopotential 5000 meter height and flooding we animate the Geopotential height over 10 days, plotting any floods that occur during those days. We see that floods occur on low pressure boundaries (5000 meters is the center of the GeoPotential weather height). [Animation is in WebM format, supported browsers include: Mozilla Firefox 4  and later, Opera 10.60  and later, Google Chrome 6  and later, Microsoft Internet Explorer 9  and later (requires WebM MF  components)]
 
 
 ```{r animation, echo=FALSE, warning=FALSE, message=FALSE, fig.show='animate'}
@@ -263,7 +256,7 @@ From the plot, we see that there are most people displaced in average in year 19
 
 ##Flooding and Population
 
-To visualize the relationship between floods and global population we superimpose transparent red dots for every flood on a global population map in GeoTiff format. (The map was retrieved from the NASA Socioeconomic Data and Applications Center (sedac) (http://beta.sedac.ciesin.columbia.edu/data/collection/gpw-v4). The map was scaled to a manageable size using the QGIS desktop application). We see that global flooding tends to occur in heavily populated areas - which makes intuitive sense and human development has concentrated in coastal areas and fertile river valleys.
+To visualize the relationship between floods and global population we superimpose transparent red dots for every flood on a global population map in GeoTiff format. (The map was retrieved from the NASA Socioeconomic Data and Applications Center (sedac) (http://beta.sedac.ciesin.columbia.edu/data/collection/gpw-v4). The map was scaled to a manageable size using the QGIS desktop application). We see that global flooding tends to occur in heavily populated areas - which makes intuitive sense since human development has concentrated in coastal areas and fertile river valleys.
 
 Global population GeoTiff
 
