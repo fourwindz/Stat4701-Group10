@@ -62,6 +62,9 @@ plot(Year,SHem, type = 'l',ylim=c(-50,110))
 }
 
 ```
+There is plenty of discussion about what causes these temperature changes and the main implications we can derive from it. 
+
+One of the biggest concerns about climate change is the rising levels of water, as well as the change in precipitation patterns worldwide. For instance, and as we will see further ahead, the number of severe floods has been steadily increasing since 1985, which is consistent with the period of time in which the global temperature has changed the most.  While we can not prove that one variable is causing the other, we certainly can point out that there is a positive correlation between temperature and number of severe floods. 
 
 ##Geopotential Height and Flooding
 
@@ -329,7 +332,7 @@ colnames(displaced.year)<-c("year", "displaced")
 displaced.year$year <- as.character(displaced.year$year)
 ggplot(displaced.year, aes(year, displaced))+geom_bar(stat = "identity") + labs(title="Average number of people displaced because of floods (since 1985)", x="Calendar Year", y="Avg.Number of People Displaced") + theme(legend.position="False", axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 ```
-From the plot, we see that there are most people displaced in average in year 1991, 2004, 2008, which are exactly the years with most people killed by floods. Again, 1991 has most people displaced in average.
+From the plot, we see that there are most people displaced on average in year 1991, 2004, 2008, which are exactly the years with most people killed by floods. Again, 1991 has most people displaced on average.
 
 
 ##Flooding and Population
@@ -757,9 +760,9 @@ corpus_mild_2 <- tm_map(corpus_mild,  removeWords, c("flooding","flood","floods"
 
 par(mfrow=c(1,2))
 wordcloud(corpus_severe_2, max.words = n, random.order = FALSE, rot.per = 0.3, colors=pal4)
-title("Magnitude > 6",line=-1)
+title("Magnitude > 6",line=2)
 wordcloud(corpus_mild_2, max.words = n, random.order = FALSE, rot.per = 0.3, colors=pal5)
-title("Magnitude < 4.6",line=-1)
+title("Magnitude < 4.6",line=2)
 
 #par(mfrow=c(1,2))
 #wordcloud(stemmedcorpus_severe, max.words = n, random.order = FALSE,  colors=pal4)
