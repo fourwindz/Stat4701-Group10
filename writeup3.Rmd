@@ -755,9 +755,9 @@ corpus_mild_2 <- tm_map(corpus_mild,  removeWords, c("flooding","flood","floods"
 
 par(mfrow=c(1,2))
 wordcloud(corpus_severe_2, max.words = n, random.order = FALSE, rot.per = 0.3, colors=pal4)
-title("Magnitude > 6",line=0)
+title("Magnitude > 6",line=2)
 wordcloud(corpus_mild_2, max.words = n, random.order = FALSE, rot.per = 0.3, colors=pal5)
-title("Magnitude < 4.6",line=0)
+title("Magnitude < 4.6",line=2)
 
 #par(mfrow=c(1,2))
 #wordcloud(stemmedcorpus_severe, max.words = n, random.order = FALSE,  colors=pal4)
