@@ -215,7 +215,7 @@ plot.axes = { axis(1); axis(2, seq(-90, 90, by = 45)); map('world', add=TRUE);gr
 
 ##Flooding Seasonality and Historical Analysis
 
-By plotting the data we have, we see a clear general trend that flooding is getting more severe year after year - the duration and severity level are both increasing. The months with the most severe floods are December-January, April, and August. We also notice that there are at least one extremely severe flood that killed/displaced hundreds people in year 1991, 2004, and 2008. Now let's take a look at each graph individually:
+By plotting the data we have, we see a clear general trend that flooding is getting more severe year after year - the duration and severity level are both increasing. The months with the most severe floods are December-January, April, and August. We also notice that there are at least one extremely severe flood that killed hundreds people in year 1991, 2004, and 2008. Further, there are most people displaced in 1999 and 2000 (while the number of people killed in those years are low), which imply that displacing residents in the flooded area in time can effectively reduce the level of fatality of floods. So we can save people by predicting floods and displacing people. Now let's take a look at each graph individually:
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(ggplot2)
@@ -328,7 +328,8 @@ colnames(displaced.year)<-c("year", "displaced")
 displaced.year$year <- as.character(displaced.year$year)
 ggplot(displaced.year, aes(year, displaced))+geom_bar(stat = "identity") + labs(title="Average number of people displaced because of floods (since 1985)", x="Calendar Year", y="Avg.Number of People Displaced") + theme(legend.position="False", axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 ```
-From the plot, we see that there are most people displaced in average in year 1991, 2004, 2008, which are exactly the years with most people skilled by floods. Again, 1991 has most people displaced in average.
+
+From the plot, we see that there are most people displaced in average in year 1995, 1999, 2000. These years are not the years with most people skilled by floods, which may imply that displacing residents of the flooded area on time can significantly reduce the number of people skilled by flood. 
 
 
 ##Flooding and Population
@@ -754,9 +755,9 @@ corpus_mild_2 <- tm_map(corpus_mild,  removeWords, c("flooding","flood","floods"
 
 par(mfrow=c(1,2))
 wordcloud(corpus_severe_2, max.words = n, random.order = FALSE, rot.per = 0.3, colors=pal4)
-title("Magnitude > 6",line=-1)
+title("Magnitude > 6",line=0)
 wordcloud(corpus_mild_2, max.words = n, random.order = FALSE, rot.per = 0.3, colors=pal5)
-title("Magnitude < 4.6",line=-1)
+title("Magnitude < 4.6",line=0)
 
 #par(mfrow=c(1,2))
 #wordcloud(stemmedcorpus_severe, max.words = n, random.order = FALSE,  colors=pal4)
