@@ -214,8 +214,9 @@ plot.axes = { axis(1); axis(2, seq(-90, 90, by = 45)); map('world', add=TRUE);gr
 ```
 
 ##Flooding Seasonality and Historical Analysis
+In addition to looking at how the number of floods has increased, we explored some of the relevant characteristics of these floods across time, to better understand the implications of these phenomena.
 
-By plotting the data we have, we see a clear general trend that flooding is getting more severe year after year - the duration and severity level are both increasing. The months with the most severe floods are December-January, April, and August. We also notice that there are at least one extremely severe flood that killed hundreds people in year 1991, 2004, and 2008. Further, there are most people displaced in 1999 and 2000 (while the number of people killed in those years are low), which imply that displacing residents in the flooded area in time can effectively reduce the level of fatality of floods. So we can save people by predicting floods and displacing people. Now let's take a look at each graph individually:
+By plotting the data we have, we see a clear general trend that flooding is getting more severe year after year - the duration and severity level are both increasing. The months with the most severe floods are December-January, April, and August. We also notice that there are at least one extremely severe flood that killed/displaced hundreds people in year 1991, 2004, and 2008. Now let's take a look at each graph individually:
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 library(ggplot2)
@@ -251,7 +252,7 @@ colnames(dur.month)<-c("month", "days")
 ggplot(dur.month, aes(month, days))+geom_bar(stat = "identity") + labs(title="Average Flood Duration (since 1985) - Data organized by the month of flood beginning", x="Calendar Month", y="Avg.Duration in Days") + theme(legend.position="False")
 ```
 
-In this graph, we summarize the average flood duration in days in terms of month. It is interesting to see that January has the longest flood duration - it is the only month that has average flood duration of more than 15 days. Notice that the flood duration in April and August are between 12 and 14 days. The rest of the months all have the average flood duration of around 10 days. From this graph, we learnt that we should expect longer duration of floods in January, April, and August regardless of the year we are in.
+In this graph, we summarize the average flood duration in days in terms of month. It is interesting to see that January has the longest flood duration - it is the only month that has average flood duration of more than 15 days. Notice that the flood duration in April and August are between 12 and 14 days. The rest of the months all have the average flood duration of around 10 days.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Percentage of floods with different severity class (since 1985)
@@ -314,7 +315,7 @@ colnames(dead.month)<-c("month", "dead")
 ggplot(dead.month, aes(month, dead))+geom_bar(stat = "identity") + labs(title="Number of fatalities by MONTH (Synthesis since 1985)", x="Calendar Month", y="Avg.Number of People Killed") + theme(legend.position="False")
 ```
 
-It is interesting to see that the average number of people killed by flood is the highest in December. We suspect that one of the most severe flood that had enormous amount of people skilled happened in December, which then pull up the average in December. The month with the second largest amount of people killed by flood is April, which makes sense because April is also one of the month we saw above that has the most sever floods in terms of duration.
+It is interesting to see that the average number of people killed by flood is the highest in December. We suspect that one of the most severe flood that had enormous amount of people killed happened in December, which then pull up the average in December. The month with the second largest amount of people killed by flood is April, which makes sense because April is also one of the month we saw above that has the most sever floods in terms of duration.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 #Average number of people displaced because of floods (since 1985)
@@ -328,8 +329,7 @@ colnames(displaced.year)<-c("year", "displaced")
 displaced.year$year <- as.character(displaced.year$year)
 ggplot(displaced.year, aes(year, displaced))+geom_bar(stat = "identity") + labs(title="Average number of people displaced because of floods (since 1985)", x="Calendar Year", y="Avg.Number of People Displaced") + theme(legend.position="False", axis.text.x=element_text(angle=90,hjust=1,vjust=0.5))
 ```
-
-From the plot, we see that there are most people displaced in average in year 1995, 1999, 2000. These years are not the years with most people skilled by floods, which may imply that displacing residents of the flooded area on time can significantly reduce the number of people skilled by flood. 
+From the plot, we see that there are most people displaced in average in year 1991, 2004, 2008, which are exactly the years with most people killed by floods. Again, 1991 has most people displaced in average.
 
 
 ##Flooding and Population
@@ -393,6 +393,8 @@ gplot(map, maxpixels = 5e5) +
 ```
 
 ##Frequency and Magnitude of Floods Worldwide
+
+After having studied the changes in GeoPotential height across the northern hemisphere, we continue our exploratory analysis by looking at how have floods been changing over time, both in terms of quantity, as well as characteristics. 
 
 Here we take an initially broad view of the incidence of severe global floods since 1985 and then narrow our scope to focus on individual countries. In the first plot, over thirty years, we observe that the number of floods worldwide has been increasing overall and at roughly the same rate between those under and over magnitude of 6. It can also be seen that the number of floods changes sinusoidally, following the roughly decade-long global weather phenomena El Nino and La Nina. 
 
@@ -755,9 +757,9 @@ corpus_mild_2 <- tm_map(corpus_mild,  removeWords, c("flooding","flood","floods"
 
 par(mfrow=c(1,2))
 wordcloud(corpus_severe_2, max.words = n, random.order = FALSE, rot.per = 0.3, colors=pal4)
-title("Magnitude > 6",line=2)
+title("Magnitude > 6",line=-1)
 wordcloud(corpus_mild_2, max.words = n, random.order = FALSE, rot.per = 0.3, colors=pal5)
-title("Magnitude < 4.6",line=2)
+title("Magnitude < 4.6",line=-1)
 
 #par(mfrow=c(1,2))
 #wordcloud(stemmedcorpus_severe, max.words = n, random.order = FALSE,  colors=pal4)
